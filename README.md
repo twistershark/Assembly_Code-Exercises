@@ -14,7 +14,7 @@ Basta executar cada solução utilizando SPIM ou outro equivalente.
 
 Para instalar o SPIM:
 
-```
+``` sh
 # macOS
 brew install spim
 
