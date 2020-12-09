@@ -1,0 +1,54 @@
+  .data
+nl:   .asciiz "\n"
+list: .word 13, 13, 13, 13, 13, 31, 31, 31, 31, 31
+  .text
+main:
+
+  la $a0, list
+  add $a1, $zero, $zero   
+  addi $a1, $a1, 10
+
+elemDistintos:
+
+  add $t0, $zero, $zero   # Contador para loop no vetor
+  addi $t0, $t0, 1        # Contador sendo iniciado em 1
+  add $t1, $zero, $zero   # Para guardar o resultado
+  
+  lw $t3, 0($a0)          # Carrega o valor da primeira posição
+  add $t2, $t3, $zero     # Maior elemento no inicio vai ser o primeiro número
+  
+  addi $t1, $t1, 1        # Já adiciona um ao resultado
+
+LOOP:
+  beq $t0, $a1, END       # Contador já é igual ao número de elementos?
+  addi $t0, $t0, 1        # Contador + 1
+
+  addi $a0, $a0, 4        # Passando para próxima posição do vetor
+  lw $t3, 0($a0)          # Carrega o valor naquela posição
+
+  slt $t4, $t2, $t3       # Verifica se o atual maior(t2) é menor que o atual elemento(t3)
+  bne $t4, $zero, SWAP    # Troca o valor do maior e adiciona um ao resultado
+  j LOOP
+
+SWAP:
+  add $t2, $t3, $zero     # maior agora é o valor de t3
+  addi $t1, $t1, 1
+  j LOOP
+
+END:
+  # add $v0, $t1, $zero
+
+  li $v0, 1                       # Imprime o maior inteiro
+  move $a0, $t1                   # Carrega o maior inteiro como argumento da syscall
+  syscall
+
+  li $v0, 4
+  la $a0, nl
+  syscall
+
+  j EXIT
+
+EXIT:
+  li $v0, 10
+  syscall
+  

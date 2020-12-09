@@ -1,0 +1,53 @@
+      .data
+overflow: .asciiz "overflow\n"
+nl: .asciiz "\n"
+      .text
+main: 
+      li $v0, 5                   # Input de sinal
+      syscall
+      bne $v0, $zero, com_sinal   # Jump para função que trata adição com sinal
+      # SEM sinal
+      li $v0, 5                   # Input valor 1
+      syscall
+      add $t0, $zero, $v0         # Guarda o primeiro inteiro em t0
+      
+      li $v0, 5                   # Input valor 2
+      syscall
+      add $t1, $zero, $v0         # Guarda o segundo inteiro em t1
+      nor $t4, $t0, $zero
+      sltu $t4, $t4, $t1
+      bne $t4, $zero, of
+      add $t2, $t0, $t1
+      j sem_overflow
+com_sinal:
+      li $v0, 5                   # Input valor 1
+      syscall
+      add $t0, $zero, $v0         # Guarda o primeiro inteiro em t0
+      
+      li $v0, 5                   # Input valor 2
+      syscall
+      add $t1, $zero, $v0         # Guarda o segundo inteiro em t1
+      addu $t2, $t0, $t1          # Calcula soma ignorando overflow
+      xor $t3, $t0, $t1           # Verifica os sinais dos operandos
+      slt $t3, $t3, $zero         # Se forem diferentes, então não houve overflow
+      bne $t3, $zero, sem_overflow
+      xor $t3, $t2, $t0           # verifica se o sinal do resultado é diferente do operando
+      slt $t3, $t3, $zero         # verifica se t3 é 1 ou 0
+      bne $t3, $zero, of    # caso t3 seja 1
+      j sem_overflow
+of:
+      li $v0, 4
+      la $a0, overflow
+      syscall
+      j EXIT
+sem_overflow:
+      li $v0, 1
+      add $a0, $t2, $zero
+      syscall
+      li $v0, 4
+      la $a0, nl
+      syscall
+      j EXIT
+EXIT: 
+      li $v0, 10
+      syscall

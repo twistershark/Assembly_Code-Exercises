@@ -1,0 +1,85 @@
+  .data
+error:    .asciiz "entrada incorreta\n"
+paridade: .asciiz "bit-paridade: "
+saida:    .asciiz "saida: "
+nl:       .asciiz "\n"
+
+  .text
+main: 
+  li $v0, 5 # Entrada
+  syscall
+  move $t0, $v0 # Copia valor de entrada pra t0
+
+  addi $t1, $zero, 127 # adiciona 127 ao registrador t1
+  slt $t1, $t1, $t0 # Verifica se t0 é maior que t1(127)
+  bne $t1, $zero, incorreta
+
+  add $t5, $zero, $zero #Contador de bits 1 iniciando como 0
+  add $t6 $t0, $zero # Copia o valor de entrada pra ser somado no final caso tenha paridade
+
+  beq $t0, $zero, EXIT # Se o numero for 0, já pula para EXIT
+
+loop:
+  beq $t0, $zero, calc #Finaliza se o numero é 0
+  
+  andi $t2, $t0, 1 # Verifica ultimo bit se é 1 ou 0
+  bne $t2, $zero, adiciona # Caso o ultimo bit seja 1, então soma 1 ao contador de bits
+
+  srl $t0, $t0, 1 # Retira o ultimo bit do numero
+  j loop
+
+
+adiciona:
+  addi $t5, $t5, 1 # Adiciona 1 ao contador de bits
+  srl $t0, $t0, 1 # Retira o ultimo bit do numero
+  
+  j loop
+
+calc:
+  addi $t7, $zero, 2 #Atribui 2 ao registrador t7
+  rem $t3, $t5, $t7 # Pega o resto da divisão de t5 com 2
+  bne $t3, $zero, transformador 
+
+  add $t3, $zero, $zero
+
+  j EXIT
+
+transformador:
+  addi $t3, $zero, 1 # Coloca paridade como 1
+  addi $t6, $t6, 128 # Soma 10000000 ao número para adicionar o bit de paridade
+
+EXIT: 
+  li $v0, 4 # Print da string de paridade
+  la $a0, paridade
+  syscall
+
+  li $v0, 1 # Print do valor de paridade
+  move $a0, $t3
+  syscall
+
+  li $v0, 4 # Print de nova linha
+  la $a0, nl
+  syscall
+
+  li $v0, 4 # Print da string de saida
+  la $a0, saida
+  syscall
+
+  li $v0, 1 # Print do valor final somado da paridade
+  move $a0, $t6
+  syscall
+
+  li $v0, 4 # Print de nova linha
+  la $a0, nl
+  syscall
+
+  li $v0, 10 # Finaliza programa
+  syscall
+
+incorreta:
+  li $v0, 4 # Print da string de entrada incorreta
+  la $a0, error
+  syscall
+
+  li $v0, 10 # Finaliza programa
+  syscall

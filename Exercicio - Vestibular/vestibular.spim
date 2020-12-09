@@ -1,0 +1,58 @@
+  .data
+gabarito: .space 256 
+respostas: .space 256 
+nl: .asciiz "\n"
+  
+  .text
+
+main:
+  # t0 = contador, t1 = resultado, t2 = tamanho da string, t3 = str1, t4 = str2 
+
+  add $t0, $zero, $zero     # Contador para o loop
+  add $t1, $zero, $zero     # Registrador para guardar o resultado
+
+  li $v0, 5                 # recebe tamanho da string
+  syscall 
+  add $t2, $v0, $zero       # Quantidade de elementos na string
+
+  li $v0, 8                   # Lê o gabarito
+  la $a0, gabarito                 
+  li $a1, 256                  
+  move $t3, $a0               # Salva gabarito em t3
+  syscall
+
+  li $v0, 8                   # Lê as respostas
+  la $a0, respostas                 
+  li $a1, 256                  
+  move $t4, $a0               # Salva respostas em t4
+  syscall
+
+verifchar: 
+  add $t5, $t0, $t3           # Carrega o endereco t3[i]
+  lbu $t6, 0($t5)             # Carrega o byte nessa posição
+
+  add $t7, $t0, $t4           # Carrega o endereco t3[i]
+  lbu $t8, 0($t7)             # Carrega o byte nessa posição
+
+  beq $t0, $t2, EXIT          # Contador já é igual ao número de elementos?
+  addi $t0, $t0, 1            # Contador += 1
+
+  beq $t6, $t8, result        # Se o caracter for igual ao outro, adiciona ao resultado
+
+  j verifchar                 # loop
+
+result:
+  addi $t1, $t1 , 1
+  j verifchar
+
+EXIT:
+  li $v0, 1                       # Imprime o maior inteiro
+  move $a0, $t1                   # Carrega o resultado como argumento da syscall
+  syscall
+
+  li $v0, 4
+  la $a0, nl
+  syscall
+
+  li $v0, 10
+  syscall

@@ -1,0 +1,48 @@
+        .data
+nl:   .asciiz "\n"
+        .text
+main:
+        add $t2, $zero, $zero           # contador de numero de entradas
+
+        li $v0, 5                       # Recebe quantidade de numeros de entrada
+        syscall
+        add $t3, $zero, $v0             # Guarda esse numero de quantidade de entrada para verificação posterior
+        
+        li $v0, 5                       # Recebe o valor do numero para comparação
+        syscall
+        
+        add $t1, $v0, $zero             # Primeira entrada vai ser utilizada para comparação com as próximas
+        addi $t2, $t2, 1                # Incrementa o contador
+
+        j verificador
+
+SWAP:
+        add $t1, $v0, $zero
+        j verificador
+
+verificador:
+        beq $t2, $t3, EXIT
+        addi $t2, $t2, 1                # Aumenta contador para comparação com o numero de entradas informado
+
+        li $v0, 5                       # Recebe o valor do numero para comparação
+        syscall
+
+        slt $t0, $t1, $v0               # O nosso maior numero atual é menor que o numero de entrada?
+
+        bne $t0, $zero, SWAP
+        j verificador                   # Chama a função novamente para a próxima entrada
+
+
+EXIT:
+        li $v0, 1                       # Imprime o maior inteiro
+        move $a0, $t1                   # Carrega o maior inteiro como argumento da syscall
+        syscall
+
+        li $v0, 4
+        la $a0, nl
+        syscall
+
+        li $v0, 10
+        syscall
+
+

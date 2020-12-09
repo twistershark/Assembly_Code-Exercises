@@ -1,0 +1,114 @@
+  .data
+const5:     .double 5.0
+const9:     .double 9.0
+const32:    .double 32.0
+constKel:   .double 273.15
+nl:         .asciiz "\n"
+cel:        .byte 'C'
+fahrenheit: .byte 'F'
+kel:        .byte 'K'
+.text
+main: 
+    li $v0, 12                   # Input de letra
+    syscall
+    move $t1, $v0
+    li $v0, 12                   # Input de letra
+    syscall
+    lb $t2, cel # Carrega C ao registrador t0
+    beq $t1, $t2, celsius  # Verifica se o caracter inserido é igual a C
+    lb $t2, fahrenheit # Carrega F ao registrador t0
+    beq $t1, $t2, fahr # Verifica se o caracter inserido é igual a F
+    lb $t2, kel # Carrega K ao registrador t0
+    beq $t1, $t2, kelvin # Verifica se o caracter inserido é igual a K
+    j EXIT
+celsius:
+  li $v0, 12                   # Input de letra
+  syscall
+  move $t1, $v0
+  li $v0, 12                   # Input de letra
+  syscall
+  lb $t0, fahrenheit # Carrega F ao registrador t0
+  beq $t1, $t0, celsiusToFahr # Verifica se o caracter inserido é igual a F
+  j celsiusToKel # Pula para conversão de celsius para kelvin
+fahr:
+  li $v0, 12                   # Input de letra
+  syscall
+  move $t1, $v0
+  li $v0, 12                   # Input de letra
+  syscall
+  lb $t0, cel # Carrega C ao registrador t0
+  beq $t1, $t0, fahrToCel # Verifica se o caracter inserido é igual a C
+  j fahrToKel # Pula para conversão de fahr para kelvin
+kelvin:
+  li $v0, 12                   # Input de letra
+  syscall
+  move $t1, $v0
+  li $v0, 12                   # Input de letra
+  syscall
+  lb $t0, cel # Carrega C ao registrador t0
+  beq $t1, $t0, kelvinToCel # Verifica se o caracter inserido é igual a C
+  j kelvinToFahr # Pula para conversão de fahr para kelvin
+  ## CONVERSÔES
+celsiusToFahr:
+  li $v0, 7
+  syscall
+  l.d $f16, const5
+  l.d $f18, const9
+  div.d $f16, $f18, $f16
+  mul.d $f0, $f0, $f16
+  l.d $f18, const32
+  add.d $f12, $f0, $f18
+  j EXIT
+celsiusToKel:
+  li $v0, 7
+  syscall
+  l.d $f16, constKel
+  add.d $f12, $f0, $f16
+  j EXIT
+fahrToCel:
+  li $v0, 7
+  syscall
+  l.d $f16, const5
+  l.d $f18, const9
+  div.d $f16, $f16, $f18
+  l.d $f18, const32
+  sub.d $f18, $f0, $f18
+  mul.d $f12, $f18, $f16
+  j EXIT
+fahrToKel:
+  li $v0, 7
+  syscall
+  l.d $f16, const5
+  l.d $f18, const9
+  div.d $f16, $f16, $f18
+  l.d $f18, const32
+  sub.d $f0, $f0, $f18
+  mul.d $f0, $f0, $f16
+  l.d $f16, constKel
+  add.d $f12, $f0, $f16
+  j EXIT
+kelvinToCel:
+  li $v0, 7
+  syscall
+  l.d $f16, constKel
+  sub.d $f12, $f0, $f16
+  j EXIT
+kelvinToFahr:
+  li $v0, 7
+  syscall
+  l.d $f16, const5
+  l.d $f18, const9
+  div.d $f16, $f18, $f16
+  l.d $f18, constKel
+  sub.d $f0, $f0, $f18
+  mul.d $f0, $f0, $f16
+  l.d $f18, const32
+  add.d $f12, $f0, $f18
+EXIT: 
+  li $v0, 3
+  syscall
+  li $v0, 4
+  la $a0, nl
+  syscall
+  li $v0, 10
+  syscall

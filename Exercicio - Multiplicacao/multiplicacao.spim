@@ -1,0 +1,50 @@
+multfac:
+  xor $t3, $a0, $a1           # Verifica os sinais dos operandos
+  slt $t3, $t3, $zero         # Se forem diferentes, então preciso dar um complemento de 2 no final
+  
+  abs $a0, $a0                # Pega o valor absoluto do inteiro 1
+  abs $a1, $a1                # Pega o valor absoluto do inteiro 2
+  add $t0, $zero, $zero       # iniciar o contador como sendo 0
+  addi $t0, $t0, -1           # contador = -1
+  add $t6, $zero, $zero         # inicia o HI como sendo 0
+  add $t7, $a1, $zero         # inicia o LO como sendo o segundo inteiro
+  ver: 
+    addi $t0, $t0, 1          # Contador++
+    slti $t4, $t0, 32
+    beq $t4, $zero, endProcess
+    and $t1, $t7, 1           # Pegar o LSB do LO
+    bne $t1, $zero, soma      # Se o LSB for 1, então pula para o procedimento de soma
+    
+    j addinteracao            # LSB do LO é 0, então só aumenta a iteração do algorit.
+  soma:
+    add $t6, $t6, $a0         # Adiciona o primeiro inteiro ao HI
+    and $t2, $t6, 1
+    sll $t2, $t2, 31          # Colocar o LSB como MSB
+    
+    srl $t6, $t6, 1           # Shift a direita do HI
+    srl $t7, $t7, 1           # Shift a direita do LO
+    
+    add $t7, $t7, $t2         # Adiciona o bit LSB do HI ao MSB do LO
+   
+    j ver                     # Outra iteração do algoritmo
+  addinteracao:
+    and $t2, $t6, 1
+    sll $t2, $t2, 31          # Colocar o LSB como MSB
+    
+    srl $t6, $t6, 1           # Shift a direita do HI
+    srl $t7, $t7, 1           # Shift a direita do LO
+    
+    add $t7, $t7, $t2         # Adiciona o bit LSB do HI ao MSB do LO
+   
+    j ver                     # Outra iteração do algoritmo
+  endProcess:
+    bne $t3, $zero, complemento # Sinais são diferentes? então faz o compl. 2
+    j terminarproc              # Se não for, termina o algoritmo
+  complemento:
+    nor $t7, $t7, $zero       
+    nor $t6, $t6, $zero         # complemento de 2
+    addi $t7, $t7, 1
+  terminarproc:
+    mthi $t6                    #Coloca o valor de $t6 em HI
+    mtlo $t7                    #Coloca o valor de $t7 em LO
+    jr $ra
