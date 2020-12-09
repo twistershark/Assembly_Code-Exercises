@@ -44,9 +44,3 @@ Dê uma ⭐️ se esse projeto te ajudou!
 
 ## 🤝 Contribuições
 Fique à vontade para contribuir para esse projeto. Toda ajuda é bem-vinda!
-
----
-
-## 📃 Licença
-
-Projeto licenciado com a licença MIT - veja o [LICENSE.md](LICENSE) para mais detalhes.
