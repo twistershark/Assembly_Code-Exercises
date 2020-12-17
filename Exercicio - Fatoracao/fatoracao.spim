@@ -1,0 +1,70 @@
+  .data
+nl:              .asciiz "\n"
+entradainvalida: .asciiz "Entrada invalida.\n"
+  .text
+main:
+        
+  # verificar se ele é divisível por 2. Se for, printa o 2 e tenta dividir
+  # até quanto der
+  # caso não divida, soma 1 ao divisor.
+  # Caso o numero de entrada seja igual a 1, encerrar programa.
+  # Criar um registrador pra verificar se teve algum numero que dividiu.
+  # Caso ele finaliza como sendo 0, printa entrada invalida. Caso ele seja 1, ignora
+
+  li $v0, 5                       # Recebe valor de entrada para fatoração
+  syscall
+  add $t0, $zero, $v0             # Guarda esse numero de quantidade de entrada para verificação posterior
+  
+  # Verificar se a entrada está dentro dos limites
+
+  add $t1, $zero, $zero
+  addi $t1, $t1, 1
+
+  slt $t1, $t1, $t0 # Verificar se o numero de entrada é menor que o limite
+  beq $t1, $zero, printError
+
+  addi $t1, $zero, 32767
+  addi $t1, $t1, 1
+  slt $t1, $t0, $t1 # Verificar se o numero de entrada é maior que o limite
+  beq $t1, $zero, printError
+
+  # Comecar Fatoração
+
+  add $t1, $zero, $zero
+  addi $t1, $zero, 1 # Utilizar T1 como verificador para ver se a fatoracao terminou.
+  addi $t2, $zero, 2 # Número Primo inicial
+
+fatoracao:
+  beq $t0, $t1, EXIT
+
+  rem $t3, $t0, $t2 # Pega o resto da divisão de t5 com 2
+  beq $t3, $zero, printPrimo
+
+  addi $t2, $t2, 1 # Soma 1 ao divisor para verificar com o próximo número
+  
+  j fatoracao # Chama a função novamente
+
+printPrimo:
+  div $t0, $t0, $t2 # Divide o número
+
+  li $v0, 1   # Imprime um numero primo
+  move $a0, $t2
+  syscall
+
+  li $v0, 4
+  la $a0, nl #Imprime quebra de linha
+  syscall
+
+  j fatoracao
+
+EXIT:
+  li $v0, 10
+  syscall
+
+printError:
+
+  li $v0, 4
+  la $a0, entradainvalida
+  syscall
+
+  j EXIT
