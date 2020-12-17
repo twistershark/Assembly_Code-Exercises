@@ -3,13 +3,6 @@ nl:              .asciiz "\n"
 entradainvalida: .asciiz "Entrada invalida.\n"
   .text
 main:
-        
-  # verificar se ele é divisível por 2. Se for, printa o 2 e tenta dividir
-  # até quanto der
-  # caso não divida, soma 1 ao divisor.
-  # Caso o numero de entrada seja igual a 1, encerrar programa.
-  # Criar um registrador pra verificar se teve algum numero que dividiu.
-  # Caso ele finaliza como sendo 0, printa entrada invalida. Caso ele seja 1, ignora
 
   li $v0, 5                       # Recebe valor de entrada para fatoração
   syscall
